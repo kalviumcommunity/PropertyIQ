@@ -1,0 +1,870 @@
+export interface PropertyImage {
+  url: string;
+  alt: string;
+}
+
+export interface ListingData {
+  assetType: string;
+  totalGLA: string;
+  zoning: string;
+  yearBuilt: number;
+  floodZone: string;
+  description: string;
+  images: PropertyImage[];
+}
+
+export interface Encumbrance {
+  type: string;
+  holder: string;
+  registeredDate: string;
+}
+
+export interface LegalData {
+  ownership: string;
+  titleType: string;
+  lotDescription: string;
+  siteArea: string;
+  planNumber: string;
+  encumbrances: Encumbrance[];
+  titleVerified: boolean;
+}
+
+export interface LocalityData {
+  neighborhood: string;
+  schoolDistrict: string;
+  crimeRate: string;
+  floodZoneDetail: string;
+  upcomingDevelopments: string[];
+  environmentalNotes: string[];
+  walkScore: number;
+  transitScore: number;
+}
+
+export interface Mismatch {
+  id: string;
+  field: string;
+  description: string;
+  source1: { label: string; value: string };
+  source2: { label: string; value: string };
+  severity: 'high' | 'medium' | 'low';
+}
+
+export interface VerificationItem {
+  label: string;
+  status: 'verified' | 'mismatch' | 'unconfirmed';
+  sourceTag: string;
+  detail?: string;
+}
+
+export interface VerifiedStatus {
+  confidenceScore: number;
+  items: VerificationItem[];
+}
+
+export interface Source {
+  label: string;
+  type: 'legal' | 'locality' | 'listing' | 'insurance';
+  page?: string;
+}
+
+export interface QAPair {
+  keywords: string[];
+  question: string;
+  answer: string;
+  sources: Source[];
+  suggestedFollowUps: string[];
+}
+
+export interface DashboardBadge {
+  label: string;
+  type: 'success' | 'danger' | 'info' | 'warning';
+}
+
+export interface Property {
+  id: string;
+  name: string;
+  address: string;
+  price: string;
+  priceNumeric: number;
+  type: string;
+  listing: ListingData;
+  legal: LegalData;
+  locality: LocalityData;
+  mismatches: Mismatch[];
+  verifiedStatus: VerifiedStatus;
+  qaBank: QAPair[];
+  dashboardBadges: DashboardBadge[];
+  welcomeMessage: string;
+}
+
+const properties: Property[] = [
+  {
+    id: 'PR-9932',
+    name: 'The Apex Tower',
+    address: '100 Financial District Blvd, NY',
+    price: '$45M',
+    priceNumeric: 45000000,
+    type: 'Commercial Office',
+    listing: {
+      assetType: 'Commercial Office',
+      totalGLA: '45,000 sq ft',
+      zoning: 'C-3',
+      yearBuilt: 2018,
+      floodZone: 'Zone X',
+      description: 'A top-quality office building in the middle of the business district. It has modern offices, a new lobby, and lots of natural light from glass walls. Most of the building is currently rented to long-term businesses.',
+      images: [
+        { url: 'https://picsum.photos/seed/apex1/800/400', alt: 'The Apex Tower Main View' },
+        { url: 'https://picsum.photos/seed/apex2/400/300', alt: 'The Apex Tower Gallery 1' },
+        { url: 'https://picsum.photos/seed/apex3/400/300', alt: 'The Apex Tower Gallery 2' }
+      ]
+    },
+    legal: {
+      ownership: 'Apex Realty Corp',
+      titleType: 'Certificate of Title',
+      lotDescription: 'Lot 45, Block 12, Plan 987654. A total area of 500 square meters in the city.',
+      siteArea: '500 sqm',
+      planNumber: '987654',
+      encumbrances: [
+        { type: 'Mortgage', holder: 'First National Bank', registeredDate: '12 Jan 2018' }
+      ],
+      titleVerified: true
+    },
+    locality: {
+      neighborhood: 'Financial District',
+      schoolDistrict: 'Metro Central District',
+      crimeRate: 'Low',
+      floodZoneDetail: 'Minimal flood risk. Safe from major flooding.',
+      upcomingDevelopments: [
+        'New train line arriving in 2025'
+      ],
+      environmentalNotes: [
+        'Clean soil reports from 2020'
+      ],
+      walkScore: 95,
+      transitScore: 98
+    },
+    mismatches: [],
+    verifiedStatus: {
+      confidenceScore: 100,
+      items: [
+        { label: 'Building Size', status: 'verified', sourceTag: 'TITLE DEED' },
+        { label: 'Zoning', status: 'verified', sourceTag: 'CITY RECORDS' },
+        { label: 'Ownership', status: 'verified', sourceTag: 'LEGAL TITLE' }
+      ]
+    },
+    dashboardBadges: [
+      { label: 'All Verified', type: 'success' },
+      { label: 'Prime Location', type: 'info' }
+    ],
+    welcomeMessage: "Hello! I have checked all the papers for The Apex Tower. Everything is correct and verified. How can I help you today?",
+    qaBank: [
+      {
+        keywords: ['hello', 'hi', 'help', 'start'],
+        question: 'Hello!',
+        answer: "Hello! I have checked all the papers for The Apex Tower. Everything is correct and verified. How can I help you today?",
+        sources: [],
+        suggestedFollowUps: ['Summarize this property', 'Who owns the property?', 'What is the price?']
+      },
+      {
+        keywords: ['summarize', 'summary', 'overview', 'tell me about'],
+        question: 'Summarize this property',
+        answer: 'The Apex Tower is a **$45M high-quality office building** in the Financial District. It is fully verified, has no legal issues, and is in a very safe area with great transit.',
+        sources: [{ label: 'Listing Details', type: 'listing' }, { label: 'Legal Title', type: 'legal' }],
+        suggestedFollowUps: ['Who owns the property?', 'What is the zoning?', 'Is it in a flood zone?']
+      },
+      {
+        keywords: ['owner', 'ownership', 'who owns'],
+        question: 'Who owns the property?',
+        answer: 'The property is owned by **Apex Realty Corp**.',
+        sources: [{ label: 'Legal Title', type: 'legal' }],
+        suggestedFollowUps: ['What is the price?', 'What is the zoning?']
+      },
+      {
+        keywords: ['price', 'cost', 'value'],
+        question: 'What is the price?',
+        answer: 'The asking price is **$45M**.',
+        sources: [{ label: 'Listing Details', type: 'listing' }],
+        suggestedFollowUps: ['Who owns the property?', 'What is the zoning?']
+      },
+      {
+        keywords: ['zoning', 'zone', 'classification'],
+        question: 'What is the zoning?',
+        answer: 'The zoning is **C-3**, which is for commercial use.',
+        sources: [{ label: 'Listing Details', type: 'listing' }],
+        suggestedFollowUps: ['Who owns the property?', 'Is it in a flood zone?']
+      },
+      {
+        keywords: ['flood', 'water', 'flood zone', 'risk'],
+        question: 'Is it in a flood zone?',
+        answer: 'No, it is in **Zone X**, which means it has a very low risk of flooding.',
+        sources: [{ label: 'Locality Report', type: 'locality' }],
+        suggestedFollowUps: ['Who owns the property?', 'What is the price?']
+      },
+      {
+        keywords: ['legal', 'risks', 'issues', 'concerns', 'encumbrances'],
+        question: 'Check for legal risks',
+        answer: 'There are no major legal risks. There is one **mortgage with First National Bank** from 2018, which is normal for a building of this size.',
+        sources: [{ label: 'Legal Title', type: 'legal' }],
+        suggestedFollowUps: ['Who owns the property?', 'What is the zoning?']
+      }
+    ]
+  },
+  {
+    id: 'PR-4521',
+    name: 'Westside Logistics Hub',
+    address: '450 Industrial Parkway, Newark, NJ',
+    price: '$2.5M',
+    priceNumeric: 2500000,
+    type: 'Industrial Warehouse',
+    listing: {
+      assetType: 'Industrial Warehouse',
+      totalGLA: '120,000 sq ft',
+      zoning: 'I-2',
+      yearBuilt: 1995,
+      floodZone: 'Zone B',
+      description: 'A large warehouse with easy access to the highway and the port. It has high ceilings and 12 loading docks. The lights and cooling systems were updated in 2022.',
+      images: [
+        { url: 'https://picsum.photos/seed/warehouse1/800/400', alt: 'Warehouse Main' },
+        { url: 'https://picsum.photos/seed/warehouse2/400/300', alt: 'Warehouse Dock' },
+        { url: 'https://picsum.photos/seed/warehouse3/400/300', alt: 'Warehouse Interior' }
+      ]
+    },
+    legal: {
+      ownership: 'GreenField Industries LLC',
+      titleType: 'Warranty Deed',
+      lotDescription: 'Block 7, Lot 22, Industrial Zone B.',
+      siteArea: '2.8 acres',
+      planNumber: '22-IND-7',
+      encumbrances: [
+        { type: 'Utility Access', holder: 'NJ Transit', registeredDate: '10 Aug 2008' }
+      ],
+      titleVerified: true
+    },
+    locality: {
+      neighborhood: 'Industrial Corridor',
+      schoolDistrict: 'Newark Public Schools',
+      crimeRate: 'Moderate',
+      floodZoneDetail: 'Moderate risk. Some nearby areas had water issues in 2011.',
+      upcomingDevelopments: [
+        'Airport expansion nearby'
+      ],
+      environmentalNotes: [
+        'Clean soil reports'
+      ],
+      walkScore: 42,
+      transitScore: 55
+    },
+    mismatches: [],
+    verifiedStatus: {
+      confidenceScore: 100,
+      items: [
+        { label: 'Building Size', status: 'verified', sourceTag: 'SURVEY' },
+        { label: 'Ownership', status: 'verified', sourceTag: 'DEED' }
+      ]
+    },
+    dashboardBadges: [
+      { label: 'Verified', type: 'success' },
+      { label: 'Logistics Hub', type: 'info' }
+    ],
+    welcomeMessage: "Hello! I have checked all the papers for Westside Logistics Hub. Everything is in order. How can I help you today?",
+    qaBank: [
+      {
+        keywords: ['hello', 'hi', 'help', 'start'],
+        question: 'Hello!',
+        answer: "Hello! I have checked all the papers for Westside Logistics Hub. Everything is in order. How can I help you today?",
+        sources: [],
+        suggestedFollowUps: ['Summarize this property', 'Who owns it?', 'What is the price?']
+      },
+      {
+        keywords: ['summarize', 'summary', 'overview', 'tell me about'],
+        question: 'Summarize this property',
+        answer: 'The Westside Logistics Hub is a **$2.5M industrial warehouse** in Newark. It is verified, has good highway access, and is in a moderate-risk flood zone.',
+        sources: [{ label: 'Listing Details', type: 'listing' }, { label: 'Legal Title', type: 'legal' }],
+        suggestedFollowUps: ['Who owns it?', 'What is the zoning?', 'Check for legal risks']
+      },
+      {
+        keywords: ['owner', 'ownership', 'who owns'],
+        question: 'Who owns it?',
+        answer: 'The property is owned by **GreenField Industries LLC**.',
+        sources: [{ label: 'Legal Title', type: 'legal' }],
+        suggestedFollowUps: ['What is the price?', 'What is the zoning?']
+      },
+      {
+        keywords: ['price', 'cost', 'value'],
+        question: 'What is the price?',
+        answer: 'The asking price is **$2.5M**.',
+        sources: [{ label: 'Listing Details', type: 'listing' }],
+        suggestedFollowUps: ['Who owns it?', 'What is the zoning?']
+      },
+      {
+        keywords: ['zoning', 'zone', 'classification'],
+        question: 'What is the zoning?',
+        answer: 'The zoning is **I-2**, which is for industrial use.',
+        sources: [{ label: 'Listing Details', type: 'listing' }],
+        suggestedFollowUps: ['Who owns it?', 'Check for legal risks']
+      },
+      {
+        keywords: ['flood', 'water', 'flood zone', 'risk'],
+        question: 'Is it in a flood zone?',
+        answer: 'It is in **Zone B**, which means there is a moderate risk of flooding.',
+        sources: [{ label: 'Locality Report', type: 'locality' }],
+        suggestedFollowUps: ['Who owns it?', 'What is the price?']
+      },
+      {
+        keywords: ['legal', 'risks', 'issues', 'concerns', 'encumbrances'],
+        question: 'Check for legal risks',
+        answer: 'There are no major legal risks. There is only a **Utility Access easement for NJ Transit** from 2008.',
+        sources: [{ label: 'Legal Title', type: 'legal' }],
+        suggestedFollowUps: ['Who owns it?', 'What is the zoning?']
+      }
+    ]
+  },
+  {
+    id: 'PR-7810',
+    name: 'Oasis Residences',
+    address: '77 Suburbia Lane, Greenwich, CT',
+    price: '$8.2M',
+    priceNumeric: 8200000,
+    type: 'Residential Condo Complex',
+    listing: {
+      assetType: 'Residential Condo Complex',
+      totalGLA: '85,000 sq ft',
+      zoning: 'R-2',
+      yearBuilt: 2020,
+      floodZone: 'Zone C',
+      description: 'A modern luxury complex with 48 units. It includes a heated pool, a gym, and a beautiful garden. It is very energy-efficient and located in a top school district.',
+      images: [
+        { url: 'https://picsum.photos/seed/condo1/800/400', alt: 'Oasis Residences Main' },
+        { url: 'https://picsum.photos/seed/condo2/400/300', alt: 'Oasis Residences Pool' },
+        { url: 'https://picsum.photos/seed/condo3/400/300', alt: 'Oasis Residences Courtyard' }
+      ]
+    },
+    legal: {
+      ownership: 'Oasis Development Group',
+      titleType: 'Certificate of Title',
+      lotDescription: 'Lot 15, Block 3, Residential Zone R-2.',
+      siteArea: '4.2 acres',
+      planNumber: '15-RES-3',
+      encumbrances: [],
+      titleVerified: true
+    },
+    locality: {
+      neighborhood: 'Greenwich Suburban',
+      schoolDistrict: 'Greenwich Public Schools',
+      crimeRate: 'Very Low',
+      floodZoneDetail: 'Very low risk. No history of flooding.',
+      upcomingDevelopments: [
+        'New park nearby in 2025'
+      ],
+      environmentalNotes: [
+        'Safe air and soil quality'
+      ],
+      walkScore: 68,
+      transitScore: 72
+    },
+    mismatches: [],
+    verifiedStatus: {
+      confidenceScore: 100,
+      items: [
+        { label: 'Title', status: 'verified', sourceTag: 'DEED' },
+        { label: 'School District', status: 'verified', sourceTag: 'SCHOOL BOARD' }
+      ]
+    },
+    dashboardBadges: [
+      { label: 'Perfect Title', type: 'success' },
+      { label: 'Luxury', type: 'info' }
+    ],
+    welcomeMessage: "Hello! I have checked all the papers for Oasis Residences. Everything is correct and verified. How can I help you today?",
+    qaBank: [
+      {
+        keywords: ['hello', 'hi', 'help', 'start'],
+        question: 'Hello!',
+        answer: "Hello! I have checked all the papers for Oasis Residences. Everything is correct and verified. How can I help you today?",
+        sources: [],
+        suggestedFollowUps: ['Summarize this property', 'Who owns it?', 'What is the price?']
+      },
+      {
+        keywords: ['summarize', 'summary', 'overview', 'tell me about'],
+        question: 'Summarize this property',
+        answer: 'Oasis Residences is an **$8.2M luxury condo complex** in Greenwich. It is fully verified, has a perfect title, and is located in a very safe neighborhood.',
+        sources: [{ label: 'Listing Details', type: 'listing' }, { label: 'Legal Title', type: 'legal' }],
+        suggestedFollowUps: ['Who owns it?', 'What is the zoning?', 'Check for legal risks']
+      },
+      {
+        keywords: ['owner', 'ownership', 'who owns'],
+        question: 'Who owns it?',
+        answer: 'The property is owned by **Oasis Development Group**.',
+        sources: [{ label: 'Legal Title', type: 'legal' }],
+        suggestedFollowUps: ['What is the price?', 'What is the zoning?']
+      },
+      {
+        keywords: ['price', 'cost', 'value'],
+        question: 'What is the price?',
+        answer: 'The asking price is **$8.2M**.',
+        sources: [{ label: 'Listing Details', type: 'listing' }],
+        suggestedFollowUps: ['Who owns it?', 'What is the zoning?']
+      },
+      {
+        keywords: ['zoning', 'zone', 'classification'],
+        question: 'What is the zoning?',
+        answer: 'The zoning is **R-2**, which is for residential use.',
+        sources: [{ label: 'Listing Details', type: 'listing' }],
+        suggestedFollowUps: ['Who owns it?', 'Check for legal risks']
+      },
+      {
+        keywords: ['flood', 'water', 'flood zone', 'risk'],
+        question: 'Is it in a flood zone?',
+        answer: 'No, it is in **Zone C**, which means there is very low risk of flooding.',
+        sources: [{ label: 'Locality Report', type: 'locality' }],
+        suggestedFollowUps: ['Who owns it?', 'What is the price?']
+      },
+      {
+        keywords: ['legal', 'risks', 'issues', 'concerns', 'encumbrances'],
+        question: 'Check for legal risks',
+        answer: 'There are **no legal risks or encumbrances** on this property. The title is perfectly clear.',
+        sources: [{ label: 'Legal Title', type: 'legal' }],
+        suggestedFollowUps: ['Who owns it?', 'What is the zoning?']
+      }
+    ]
+  },
+  {
+    id: 'PR-1122',
+    name: 'Azure Waterfront Villas',
+    address: '200 Ocean Drive, Miami, FL',
+    price: '$12M',
+    priceNumeric: 12000000,
+    type: 'Luxury Residential',
+    listing: {
+      assetType: 'Residential Villas',
+      totalGLA: '25,000 sq ft',
+      zoning: 'R-1',
+      yearBuilt: 2022,
+      floodZone: 'Zone X',
+      description: 'Five luxury villas right on the beach. Each villa has a private pool and modern design. Built with high-end materials to withstand sea air.',
+      images: [
+        { url: 'https://picsum.photos/seed/azure1/800/400', alt: 'Azure Main' },
+        { url: 'https://picsum.photos/seed/azure2/400/300', alt: 'Azure Villa' },
+        { url: 'https://picsum.photos/seed/azure3/400/300', alt: 'Azure Beach' }
+      ]
+    },
+    legal: {
+      ownership: 'Blue Wave Holdings',
+      titleType: 'Warranty Deed',
+      lotDescription: 'Lot 10, Waterfront Zone, Miami.',
+      siteArea: '2 acres',
+      planNumber: 'WF-10-MIAMI',
+      encumbrances: [],
+      titleVerified: true
+    },
+    locality: {
+      neighborhood: 'Beachfront District',
+      schoolDistrict: 'Miami Coast Schools',
+      crimeRate: 'Low',
+      floodZoneDetail: 'Low risk due to new sea walls.',
+      upcomingDevelopments: [
+        'New yacht club nearby'
+      ],
+      environmentalNotes: [
+        'Protected shoreline'
+      ],
+      walkScore: 80,
+      transitScore: 60
+    },
+    mismatches: [],
+    verifiedStatus: {
+      confidenceScore: 100,
+      items: [
+        { label: 'Title', status: 'verified', sourceTag: 'DEED' },
+        { label: 'Area', status: 'verified', sourceTag: 'SURVEY' }
+      ]
+    },
+    dashboardBadges: [
+      { label: 'Waterfront', type: 'info' },
+      { label: 'Verified', type: 'success' }
+    ],
+    welcomeMessage: "Hello! I have checked all the papers for Azure Waterfront Villas. Everything is correct and verified. How can I help you today?",
+    qaBank: [
+      {
+        keywords: ['hello', 'hi', 'help', 'start'],
+        question: 'Hello!',
+        answer: "Hello! I have checked all the papers for Azure Waterfront Villas. Everything is correct and verified. How can I help you today?",
+        sources: [],
+        suggestedFollowUps: ['Summarize this property', 'Who owns it?', 'What is the price?']
+      },
+      {
+        keywords: ['summarize', 'summary', 'overview', 'tell me about'],
+        question: 'Summarize this property',
+        answer: 'Azure Waterfront Villas is a **$12M luxury residential property** in Miami. It is fully verified, beachfront, and has no legal risks.',
+        sources: [{ label: 'Listing Details', type: 'listing' }, { label: 'Legal Title', type: 'legal' }],
+        suggestedFollowUps: ['Who owns it?', 'What is the zoning?', 'Check for legal risks']
+      },
+      {
+        keywords: ['owner', 'ownership', 'who owns'],
+        question: 'Who owns it?',
+        answer: 'The property is owned by **Blue Wave Holdings**.',
+        sources: [{ label: 'Legal Title', type: 'legal' }],
+        suggestedFollowUps: ['What is the price?', 'What is the zoning?']
+      },
+      {
+        keywords: ['price', 'cost', 'value'],
+        question: 'What is the price?',
+        answer: 'The asking price is **$12M**.',
+        sources: [{ label: 'Listing Details', type: 'listing' }],
+        suggestedFollowUps: ['Who owns it?', 'What is the zoning?']
+      },
+      {
+        keywords: ['zoning', 'zone', 'classification'],
+        question: 'What is the zoning?',
+        answer: 'The zoning is **R-1**, which is for single-family residential use.',
+        sources: [{ label: 'Listing Details', type: 'listing' }],
+        suggestedFollowUps: ['Who owns it?', 'Check for legal risks']
+      },
+      {
+        keywords: ['flood', 'water', 'flood zone', 'risk'],
+        question: 'Is it in a flood zone?',
+        answer: 'No, it is in **Zone X**, which means it has a very low risk of flooding.',
+        sources: [{ label: 'Locality Report', type: 'locality' }],
+        suggestedFollowUps: ['Who owns it?', 'What is the price?']
+      },
+      {
+        keywords: ['legal', 'risks', 'issues', 'concerns', 'encumbrances'],
+        question: 'Check for legal risks',
+        answer: 'There are **no legal risks or encumbrances** on this property. The title is perfectly clear.',
+        sources: [{ label: 'Legal Title', type: 'legal' }],
+        suggestedFollowUps: ['Who owns it?', 'What is the zoning?']
+      }
+    ]
+  },
+  {
+    id: 'PR-3344',
+    name: 'Summit Retail Plaza',
+    address: '500 Shopping Way, Austin, TX',
+    price: '$18M',
+    priceNumeric: 18000000,
+    type: 'Retail Commercial',
+    listing: {
+      assetType: 'Retail Plaza',
+      totalGLA: '60,000 sq ft',
+      zoning: 'C-1',
+      yearBuilt: 2015,
+      floodZone: 'Zone X',
+      description: 'A busy shopping plaza with 10 retail spaces. It has a large parking lot and high foot traffic from the nearby mall.',
+      images: [
+        { url: 'https://picsum.photos/seed/summit1/800/400', alt: 'Summit Main' },
+        { url: 'https://picsum.photos/seed/summit2/400/300', alt: 'Summit Store' },
+        { url: 'https://picsum.photos/seed/summit3/400/300', alt: 'Summit Parking' }
+      ]
+    },
+    legal: {
+      ownership: 'Lone Star Commercial',
+      titleType: 'Certificate of Title',
+      lotDescription: 'Lot 200, Retail District, Austin.',
+      siteArea: '5 acres',
+      planNumber: 'TX-SUM-200',
+      encumbrances: [],
+      titleVerified: true
+    },
+    locality: {
+      neighborhood: 'Retail Hub',
+      schoolDistrict: 'Austin North District',
+      crimeRate: 'Low',
+      floodZoneDetail: 'No flood risk.',
+      upcomingDevelopments: [
+        'New road expansion in 2026'
+      ],
+      environmentalNotes: [
+        'Standard urban soil'
+      ],
+      walkScore: 70,
+      transitScore: 85
+    },
+    mismatches: [],
+    verifiedStatus: {
+      confidenceScore: 100,
+      items: [
+        { label: 'Title', status: 'verified', sourceTag: 'DEED' },
+        { label: 'Parking Area', status: 'verified', sourceTag: 'PLAN' }
+      ]
+    },
+    dashboardBadges: [
+      { label: 'High Traffic', type: 'info' },
+      { label: 'Verified', type: 'success' }
+    ],
+    welcomeMessage: "Hello! I have checked all the papers for Summit Retail Plaza. Everything is correct and verified. How can I help you today?",
+    qaBank: [
+      {
+        keywords: ['hello', 'hi', 'help', 'start'],
+        question: 'Hello!',
+        answer: "Hello! I have checked all the papers for Summit Retail Plaza. Everything is correct and verified. How can I help you today?",
+        sources: [],
+        suggestedFollowUps: ['Summarize this property', 'Who owns it?', 'What is the price?']
+      },
+      {
+        keywords: ['summarize', 'summary', 'overview', 'tell me about'],
+        question: 'Summarize this property',
+        answer: 'Summit Retail Plaza is an **$18M retail commercial property** in Austin. It is fully verified, has no legal risks, and high foot traffic.',
+        sources: [{ label: 'Listing Details', type: 'listing' }, { label: 'Legal Title', type: 'legal' }],
+        suggestedFollowUps: ['Who owns it?', 'What is the zoning?', 'Check for legal risks']
+      },
+      {
+        keywords: ['owner', 'ownership', 'who owns'],
+        question: 'Who owns it?',
+        answer: 'The property is owned by **Lone Star Commercial**.',
+        sources: [{ label: 'Legal Title', type: 'legal' }],
+        suggestedFollowUps: ['What is the price?', 'What is the zoning?']
+      },
+      {
+        keywords: ['price', 'cost', 'value'],
+        question: 'What is the price?',
+        answer: 'The asking price is **$18M**.',
+        sources: [{ label: 'Listing Details', type: 'listing' }],
+        suggestedFollowUps: ['Who owns it?', 'What is the zoning?']
+      },
+      {
+        keywords: ['zoning', 'zone', 'classification'],
+        question: 'What is the zoning?',
+        answer: 'The zoning is **C-1**, which is for retail commercial use.',
+        sources: [{ label: 'Listing Details', type: 'listing' }],
+        suggestedFollowUps: ['Who owns it?', 'Check for legal risks']
+      },
+      {
+        keywords: ['flood', 'water', 'flood zone', 'risk'],
+        question: 'Is it in a flood zone?',
+        answer: 'No, it is in **Zone X**, which means there is no flood risk.',
+        sources: [{ label: 'Locality Report', type: 'locality' }],
+        suggestedFollowUps: ['Who owns it?', 'What is the price?']
+      },
+      {
+        keywords: ['legal', 'risks', 'issues', 'concerns', 'encumbrances'],
+        question: 'Check for legal risks',
+        answer: 'There are **no legal risks or encumbrances** on this property. The title is perfectly clear.',
+        sources: [{ label: 'Legal Title', type: 'legal' }],
+        suggestedFollowUps: ['Who owns it?', 'What is the zoning?']
+      }
+    ]
+  },
+  {
+    id: 'PR-5566',
+    name: 'Green Valley Wellness Center',
+    address: '12 Health Way, Boulder, CO',
+    price: '$6.5M',
+    priceNumeric: 6500000,
+    type: 'Healthcare',
+    listing: {
+      assetType: 'Medical Center',
+      totalGLA: '30,000 sq ft',
+      zoning: 'M-1',
+      yearBuilt: 2010,
+      floodZone: 'Zone X',
+      description: 'A quiet medical center with specialized offices and a healing garden. It is fully accessible for people with disabilities.',
+      images: [
+        { url: 'https://picsum.photos/seed/green1/800/400', alt: 'Green Valley Main' },
+        { url: 'https://picsum.photos/seed/green2/400/300', alt: 'Green Valley Garden' },
+        { url: 'https://picsum.photos/seed/green3/400/300', alt: 'Green Valley Office' }
+      ]
+    },
+    legal: {
+      ownership: 'Colorado Health Trust',
+      titleType: 'Warranty Deed',
+      lotDescription: 'Lot 5, Wellness Zone, Boulder.',
+      siteArea: '3 acres',
+      planNumber: 'CO-GV-5',
+      encumbrances: [],
+      titleVerified: true
+    },
+    locality: {
+      neighborhood: 'Health District',
+      schoolDistrict: 'Boulder Public Schools',
+      crimeRate: 'Very Low',
+      floodZoneDetail: 'No flood risk.',
+      upcomingDevelopments: [
+        'New pharmacy next door'
+      ],
+      environmentalNotes: [
+        'Air quality is excellent'
+      ],
+      walkScore: 60,
+      transitScore: 70
+    },
+    mismatches: [],
+    verifiedStatus: {
+      confidenceScore: 100,
+      items: [
+        { label: 'Title', status: 'verified', sourceTag: 'DEED' },
+        { label: 'Zoning', status: 'verified', sourceTag: 'CITY' }
+      ]
+    },
+    dashboardBadges: [
+      { label: 'Accessible', type: 'info' },
+      { label: 'Verified', type: 'success' }
+    ],
+    welcomeMessage: "Hello! I have checked all the papers for Green Valley Wellness Center. Everything is correct and verified. How can I help you today?",
+    qaBank: [
+      {
+        keywords: ['hello', 'hi', 'help', 'start'],
+        question: 'Hello!',
+        answer: "Hello! I have checked all the papers for Green Valley Wellness Center. Everything is correct and verified. How can I help you today?",
+        sources: [],
+        suggestedFollowUps: ['Summarize this property', 'Who owns it?', 'What is the price?']
+      },
+      {
+        keywords: ['summarize', 'summary', 'overview', 'tell me about'],
+        question: 'Summarize this property',
+        answer: 'Green Valley Wellness Center is a **$6.5M healthcare facility** in Boulder. It is fully verified, accessible, and has no legal risks.',
+        sources: [{ label: 'Listing Details', type: 'listing' }, { label: 'Legal Title', type: 'legal' }],
+        suggestedFollowUps: ['Who owns it?', 'What is the zoning?', 'Check for legal risks']
+      },
+      {
+        keywords: ['owner', 'ownership', 'who owns'],
+        question: 'Who owns it?',
+        answer: 'The property is owned by **Colorado Health Trust**.',
+        sources: [{ label: 'Legal Title', type: 'legal' }],
+        suggestedFollowUps: ['What is the price?', 'What is the zoning?']
+      },
+      {
+        keywords: ['price', 'cost', 'value'],
+        question: 'What is the price?',
+        answer: 'The asking price is **$6.5M**.',
+        sources: [{ label: 'Listing Details', type: 'listing' }],
+        suggestedFollowUps: ['Who owns it?', 'What is the zoning?']
+      },
+      {
+        keywords: ['zoning', 'zone', 'classification'],
+        question: 'What is the zoning?',
+        answer: 'The zoning is **M-1**, which is for medical use.',
+        sources: [{ label: 'Listing Details', type: 'listing' }],
+        suggestedFollowUps: ['Who owns it?', 'Check for legal risks']
+      },
+      {
+        keywords: ['flood', 'water', 'flood zone', 'risk'],
+        question: 'Is it in a flood zone?',
+        answer: 'No, it is in **Zone X**, which means there is no flood risk.',
+        sources: [{ label: 'Locality Report', type: 'locality' }],
+        suggestedFollowUps: ['Who owns it?', 'What is the price?']
+      },
+      {
+        keywords: ['legal', 'risks', 'issues', 'concerns', 'encumbrances'],
+        question: 'Check for legal risks',
+        answer: 'There are **no legal risks or encumbrances** on this property. The title is perfectly clear.',
+        sources: [{ label: 'Legal Title', type: 'legal' }],
+        suggestedFollowUps: ['Who owns it?', 'What is the zoning?']
+      }
+    ]
+  },
+  {
+    id: 'PR-8899',
+    name: 'Ironworks Art Studios',
+    address: '88 Foundry Lane, Portland, OR',
+    price: '$4.2M',
+    priceNumeric: 4200000,
+    type: 'Mixed Use',
+    listing: {
+      assetType: 'Creative Studios',
+      totalGLA: '20,000 sq ft',
+      zoning: 'M-U',
+      yearBuilt: 1940,
+      floodZone: 'Zone X',
+      description: 'A converted old factory now used for art studios and lofts. It has an industrial style with high ceilings and a gallery space.',
+      images: [
+        { url: 'https://picsum.photos/seed/iron1/800/400', alt: 'Ironworks Main' },
+        { url: 'https://picsum.photos/seed/iron2/400/300', alt: 'Ironworks Studio' },
+        { url: 'https://picsum.photos/seed/iron3/400/300', alt: 'Ironworks Gallery' }
+      ]
+    },
+    legal: {
+      ownership: 'Portland Arts Collective',
+      titleType: 'Warranty Deed',
+      lotDescription: 'Lot 88, Creative Zone, Portland.',
+      siteArea: '1.5 acres',
+      planNumber: 'OR-IW-88',
+      encumbrances: [],
+      titleVerified: true
+    },
+    locality: {
+      neighborhood: 'Art District',
+      schoolDistrict: 'Portland Public Schools',
+      crimeRate: 'Low',
+      floodZoneDetail: 'No flood risk.',
+      upcomingDevelopments: [
+        'New art museum nearby'
+      ],
+      environmentalNotes: [
+        'Old factory cleaned and safe'
+      ],
+      walkScore: 85,
+      transitScore: 80
+    },
+    mismatches: [],
+    verifiedStatus: {
+      confidenceScore: 100,
+      items: [
+        { label: 'Title', status: 'verified', sourceTag: 'DEED' },
+        { label: 'Zoning', status: 'verified', sourceTag: 'CITY' }
+      ]
+    },
+    dashboardBadges: [
+      { label: 'Creative Space', type: 'info' },
+      { label: 'Verified', type: 'success' }
+    ],
+    welcomeMessage: "Hello! I have checked all the papers for Ironworks Art Studios. Everything is correct and verified. How can I help you today?",
+    qaBank: [
+      {
+        keywords: ['hello', 'hi', 'help', 'start'],
+        question: 'Hello!',
+        answer: "Hello! I have checked all the papers for Ironworks Art Studios. Everything is correct and verified. How can I help you today?",
+        sources: [],
+        suggestedFollowUps: ['Summarize this property', 'Who owns it?', 'What is the price?']
+      },
+      {
+        keywords: ['summarize', 'summary', 'overview', 'tell me about'],
+        question: 'Summarize this property',
+        answer: 'Ironworks Art Studios is a **$4.2M mixed-use creative space** in Portland. It is fully verified, has no legal risks, and an industrial style.',
+        sources: [{ label: 'Listing Details', type: 'listing' }, { label: 'Legal Title', type: 'legal' }],
+        suggestedFollowUps: ['Who owns it?', 'What is the zoning?', 'Check for legal risks']
+      },
+      {
+        keywords: ['owner', 'ownership', 'who owns'],
+        question: 'Who owns it?',
+        answer: 'The property is owned by **Portland Arts Collective**.',
+        sources: [{ label: 'Legal Title', type: 'legal' }],
+        suggestedFollowUps: ['What is the price?', 'What is the zoning?']
+      },
+      {
+        keywords: ['price', 'cost', 'value'],
+        question: 'What is the price?',
+        answer: 'The asking price is **$4.2M**.',
+        sources: [{ label: 'Listing Details', type: 'listing' }],
+        suggestedFollowUps: ['Who owns it?', 'What is the zoning?']
+      },
+      {
+        keywords: ['zoning', 'zone', 'classification'],
+        question: 'What is the zoning?',
+        answer: 'The zoning is **M-U**, which is for mixed-use.',
+        sources: [{ label: 'Listing Details', type: 'listing' }],
+        suggestedFollowUps: ['Who owns it?', 'Check for legal risks']
+      },
+      {
+        keywords: ['flood', 'water', 'flood zone', 'risk'],
+        question: 'Is it in a flood zone?',
+        answer: 'No, it is in **Zone X**, which means there is no flood risk.',
+        sources: [{ label: 'Locality Report', type: 'locality' }],
+        suggestedFollowUps: ['Who owns it?', 'What is the price?']
+      },
+      {
+        keywords: ['legal', 'risks', 'issues', 'concerns', 'encumbrances'],
+        question: 'Check for legal risks',
+        answer: 'There are **no legal risks or encumbrances** on this property. The title is perfectly clear.',
+        sources: [{ label: 'Legal Title', type: 'legal' }],
+        suggestedFollowUps: ['Who owns it?', 'What is the zoning?']
+      }
+    ]
+  }
+];
+
+export function getAllProperties(): Property[] {
+  return properties;
+}
+
+export function getPropertyById(id: string): Property | undefined {
+  return properties.find(p => p.id === id);
+}
